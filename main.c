@@ -3,21 +3,21 @@
 #include <string.h>
 #include <math.h>
 
-#define MAX_EXP_LEN 100 // ÊäÈëµÄ±í´ïÊ½×î´ó³¤¶È
-#define ISOPERATER 1 // ²Ù×÷·û
-#define ISNUMBER 2   // Êı×Ö
-#define ISALPHA 3    // º¯Êı
+#define MAX_EXP_LEN 100 // è¾“å…¥çš„è¡¨è¾¾å¼æœ€å¤§é•¿åº¦
+#define ISOPERATER 1 // æ“ä½œç¬¦
+#define ISNUMBER 2   // æ•°å­—
+#define ISALPHA 3    // å‡½æ•°
 
 typedef struct{
-	int type; // 1-->²Ù×÷·û, 2-->Êı×Ö, 3-->º¯Êı
+	int type; // 1-->æ“ä½œç¬¦, 2-->æ•°å­—, 3-->å‡½æ•°
 	double number;
 	char op[10];
-}ElemType; // Êı¾İÀàĞÍ
+}ElemType; // æ•°æ®ç±»å‹
 
 typedef struct node{
 	ElemType data;
 	struct node *next;
-}sNode, *Stack; // Á´Õ»
+}sNode, *Stack; // é“¾æ ˆ
 
 Stack opStack, numStack;
 
@@ -27,7 +27,7 @@ sNode *creatNode()
 	return re;
 }
 
-// ÈëÕ»-->²åÈëĞÂ½áµã(Í·²å)
+// å…¥æ ˆ-->æ’å…¥æ–°ç»“ç‚¹(å¤´æ’)
 void push(Stack s, ElemType *data)
 {
 	sNode *newNode = creatNode();
@@ -38,7 +38,7 @@ void push(Stack s, ElemType *data)
 	s->next = newNode;
 }
 
-// ³öÕ»
+// å‡ºæ ˆ
 void pop(Stack s, sNode *re)
 {
 	sNode *p = s->next;
@@ -67,7 +67,7 @@ void pop(Stack s, sNode *re)
 	printf("\n");
 }*/
 
-// Ïú»ÙÕ»
+// é”€æ¯æ ˆ
 void destroy(Stack s)
 {
 	sNode *pre = s, *p = s->next;
@@ -81,7 +81,7 @@ void destroy(Stack s)
 	free(s);
 }
 
-// ÅĞ¶Ï×Ö·û
+// åˆ¤æ–­å­—ç¬¦
 int judgeChar(char ch)
 {
 	if(ch >= '0' && ch <= '9')
@@ -93,7 +93,7 @@ int judgeChar(char ch)
 	return -1;
 }
 
-// Á´Õ»·­×ª
+// é“¾æ ˆç¿»è½¬
 void reverseStack(Stack s)
 {
 	sNode *p = s->next, *q;
@@ -107,7 +107,7 @@ void reverseStack(Stack s)
 	}
 }
 
-// ½«×Ö·û´®²ğ¿ª´æ½ø½á¹¹Ìå
+// å°†å­—ç¬¦ä¸²æ‹†å¼€å­˜è¿›ç»“æ„ä½“
 Stack storeExp(char *exp)
 {
 	int i = 0, negative, k;
@@ -117,13 +117,13 @@ Stack storeExp(char *exp)
 	{
 		k = 0, negative = 1;
 		data = (ElemType*)calloc(1, sizeof(ElemType));
-		// Èç¹û - ºÅÇ°ÃæÃ»ÓĞ×Ö·û»òÕßÎª£¨, Îª¸ºÊı
+		// å¦‚æœ - å·å‰é¢æ²¡æœ‰å­—ç¬¦æˆ–è€…ä¸ºï¼ˆ, ä¸ºè´Ÿæ•°
 		if(exp[i] == '-' && (i - 1 < 0 || exp[i-1] == '('))
 		{
 			negative = -1;
 			++i;
 		}
-		if(ISNUMBER == judgeChar(exp[i])) // ´æÊı×Ö
+		if(ISNUMBER == judgeChar(exp[i])) // å­˜æ•°å­—
 		{
 			while(exp[i] && ISNUMBER == judgeChar(exp[i]))
 			{
@@ -132,7 +132,7 @@ Stack storeExp(char *exp)
 			data->number *= negative;
 			data->type = ISNUMBER;
 		}
-		else if(ISALPHA == judgeChar(exp[i])) // ´æº¯Êı
+		else if(ISALPHA == judgeChar(exp[i])) // å­˜å‡½æ•°
 		{
 			while(exp[i] && ISALPHA == judgeChar(exp[i]))
 			{
@@ -144,24 +144,24 @@ Stack storeExp(char *exp)
 			}
 			else
 			{
-				printf("º¯ÊıÊäÈë´íÎó£¬ÇëÖØĞÂÊäÈë£¡\n");
+				printf("å‡½æ•°è¾“å…¥é”™è¯¯ï¼Œè¯·é‡æ–°è¾“å…¥ï¼\n");
 				return NULL;
 			}
 		}
-		// ´æÔËËã·û
+		// å­˜è¿ç®—ç¬¦
 		else if(ISOPERATER == judgeChar(exp[i]))
 		{
 			data->op[k++] = exp[i++];
 			data->type = ISOPERATER;
 		}
-		else if(exp[i] == ' ') // ¿Õ¸ñÌø¹ı
+		else if(exp[i] == ' ') // ç©ºæ ¼è·³è¿‡
 		{
 			++i;
 			continue;
 		}
 		else
 		{
-			printf("±í´ïÊ½²»ºÏ·¨£¬ÇëÖØĞÂÊäÈë£¡\n");
+			printf("è¡¨è¾¾å¼ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥ï¼\n");
 			return NULL;
 		}
 		push(re, data);
@@ -170,7 +170,7 @@ Stack storeExp(char *exp)
 	return re;
 }
 
-// ÖĞ×º×ªºó×º
+// ä¸­ç¼€è½¬åç¼€
 void infixToPostfix(Stack s)
 {
 	sNode *tmp = creatNode(), *p = s->next;
@@ -225,7 +225,7 @@ void infixToPostfix(Stack s)
 	reverseStack(s);
 }
 
-// ºó×º±í´ïÊ½ÇóÖµ
+// åç¼€è¡¨è¾¾å¼æ±‚å€¼
 double calculate(Stack s)
 {
 	sNode *num1 = creatNode(), *num2 = creatNode(), *p = s->next;
@@ -262,7 +262,7 @@ double calculate(Stack s)
 			}
 			else
 			{
-				printf("±í´ïÊ½²»ºÏ·¨£¬ÇëÖØĞÂÊäÈë£¡\n");
+				printf("è¡¨è¾¾å¼ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥ï¼\n");
 				return 0;
 			}
 		}
@@ -288,7 +288,7 @@ double calculate(Stack s)
 				{
 					if(num1->data.number == 0)
 					{
-						printf("ÕûÊı³ı0£¡\n");
+						printf("æ•´æ•°é™¤0ï¼\n");
 						return 0;
 					}
 					num2->data.number /= num1->data.number;
@@ -297,7 +297,7 @@ double calculate(Stack s)
 			}
 			else
 			{
-				printf("±í´ïÊ½²»ºÏ·¨£¬ÇëÖØĞÂÊäÈë£¡\n");
+				printf("è¡¨è¾¾å¼ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥ï¼\n");
 				return 0;
 			}
 		}
@@ -307,46 +307,46 @@ double calculate(Stack s)
 		return numStack->next->data.number;
 	else
 	{
-		printf("±í´ïÊ½²»ºÏ·¨£¬ÇëÖØĞÂÊäÈë£¡\n");
+		printf("è¡¨è¾¾å¼ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥ï¼\n");
 		return 0;
 	}
 }
 
-// Ö÷½çÃæ
+// ä¸»ç•Œé¢
 void menu()
 {
 	printf("--------------------------------\n");
-	printf("\t¼òÒ×¿ÆÑ§¼ÆËãÆ÷\n");
+	printf("\tç®€æ˜“ç§‘å­¦è®¡ç®—å™¨\n");
 	printf("--------------------------------\n");
-	printf("1£©Ö§³ÖµÄÔËËã·û£º\n\n");
+	printf("1ï¼‰æ”¯æŒçš„è¿ç®—ç¬¦ï¼š\n\n");
 	printf("1.+\t2.-\t3.*\t4./\n\n5.sin\t6.cos\t7.tan\t8.lg\n\n");
-	printf("2£©ÌØ±ğËµÃ÷£º\n\n");
-	printf("ÇëÊ¹ÓÃ°ë½Ç·ûºÅ£¡\n");
+	printf("2ï¼‰ç‰¹åˆ«è¯´æ˜ï¼š\n\n");
+	printf("è¯·ä½¿ç”¨åŠè§’ç¬¦å·ï¼\n");
 	printf("--------------------------------\n");
 }
 
-// ÓÃ»§½»»¥
+// ç”¨æˆ·äº¤äº’
 void keyDown()
 {
 	int op;
 	double ans;
 	char *exp = (char*)calloc(MAX_EXP_LEN, sizeof(char));
 	Stack express = creatNode();
-	printf("ÇëÊäÈë£¨1.¼ÆËã 2.ÍË³ö£©£º");
+	printf("è¯·è¾“å…¥ï¼ˆ1.è®¡ç®— 2.é€€å‡ºï¼‰ï¼š");
 	fflush(stdin);
 	scanf("%d", &op);
 	printf("--------------------------------\n");
 	switch(op)
 	{
 		case 1:
-			printf("ÇëÊäÈë±í´ïÊ½£º");
-			// ¶ÁÈ¡±í´ïÊ½
+			printf("è¯·è¾“å…¥è¡¨è¾¾å¼ï¼š");
+			// è¯»å–è¡¨è¾¾å¼
 			fflush(stdin);
 			scanf("%s", exp);
-			// ±í´ïÊ½²ğ¿ª´æ½øÕ»
+			// è¡¨è¾¾å¼æ‹†å¼€å­˜è¿›æ ˆ
 			exp = strlwr(exp);
 			express = storeExp(exp);
-			// ÈôÕıÈ·´æÈë
+			// è‹¥æ­£ç¡®å­˜å…¥
 			if(express != NULL)
 			{
 				infixToPostfix(express);
@@ -358,7 +358,7 @@ void keyDown()
 			exit(0);
 			break;
 		default:
-			printf("ÊäÈë²»ºÏ·¨£¬ÇëÖØĞÂÊäÈë£¡\n");
+			printf("è¾“å…¥ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥ï¼\n");
 			break;
 	}
 }
@@ -373,4 +373,3 @@ void main()
 		system("cls");
 	}
 	system("pause");
-}
